@@ -4,5 +4,5 @@
 
 ## tech
 
-back : flask
+back : flask  
 front : vue.js + Vuetify
