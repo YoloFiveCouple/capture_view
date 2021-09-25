@@ -13,21 +13,44 @@
         <v-app>
             <v-main>
                 <v-container>
-                    ラズパイストリーミング映像
-                    <img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 2%, 12%);" src="http://raspberrypi.local:8081/">
-                    <template>
-                        <v-data-table :headers="headers" :items="desserts" :items-per-page="5" class="elevation-1">
-                        </v-data-table>
-                    </template>
-                    <template>
-                        <v-data-table :headers="motion_header" :items="motion_data" :items-per-page="15" class="elevation-1">
-                            <template v-slot:item.img = "{item}">
-                                <v-img
-                                    src='data:Image/png;base64,{item.img}'
-                                ></v-img>
+                    <v-row>
+                        <v-col cols="12" sm="5">
+                            <v-row>
+                                <h1>ラズパイストリーミング映像</h1>
+                                <img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 2%, 12%);" height="400px" width="600px" src="http://raspberrypi.local:8081/">
+                            </v-row>
+                            <v-row>
+                                キャプチャ総数 : {{motion_data.length}}
+                            </v-row>
+                        </v-col>
+                        <v-col cols="12" sm="7">
+                            <h1>キャプチャされた画像</h1>
+                            <template>
+                                <v-data-table 
+                                    dense
+                                    :headers="motion_header" 
+                                    :items="motion_data" 
+                                    :items-per-page="15" 
+                                    item-key="filename"
+                                    class="elevation-1" 
+                                    :search="search"
+                                    :custom-filter="filterOnlyCapsText"
+                                    >
+                                    <template v-slot:top>
+                                        <v-text-field
+                                            v-model="search"
+                                            label="Search(ファイル名で検索 例えば、'09250744など')"
+                                            class="mx-4"
+                                        >
+                                        </v-text-field>
+                                    </template>
+                                    <template v-slot:item.img="{item}">
+                                        <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
+                                    </template>
+                                </v-data-table>
                             </template>
-                        </v-data-table>
-                    </template>
+                        </v-col>
+                    </v-row>
                 </v-container>
             </v-main>
         </v-app>
@@ -42,12 +65,15 @@
             vuetify: new Vuetify(),
             data: function () {
                 return {
-                    motion_header : [
-                        {text:'id', value:'id'},
-                        {text:'filename', value: 'filename'},
-                        {text:'img', value:'img'}
+                    search:'',
+                    motion_header: [
+                        { text: 'id', value: 'id' },
+                        { text: 'img', value: 'img' },
+                        { text: 'file_date', value: 'file_date' },
+                        { text: 'file_time', value: 'file_time' },
+                        { text: 'filename', value: 'file_name' }
                     ],
-                    motion_data : [
+                    motion_data: [
                         // データは以下のような形式
                         // {
                         //     id:'1',
@@ -55,57 +81,31 @@
                         //     img:'base64だよ'
                         // },
                     ],
-                    headers: [
-                        {
-                            text: 'Dessert (100g serving)',
-                            align: 'start',
-                            sortable: false,
-                            value: 'name',
-                        },
-                        { text: 'Calories', value: 'calories' },
-                        { text: 'Fat (g)', value: 'fat' },
-                        { text: 'Carbs (g)', value: 'carbs' },
-                        { text: 'Protein (g)', value: 'protein' },
-                        { text: 'Iron (%)', value: 'iron' },
-                    ],
-                    desserts: [
-                        {
-                            name: 'Frozen Yogurt',
-                            calories: 159,
-                            fat: 6.0,
-                            carbs: 24,
-                            protein: 4.0,
-                            iron: '1%',
-                        },
-                        {
-                            name: 'Ice cream sandwich',
-                            calories: 237,
-                            fat: 9.0,
-                            carbs: 37,
-                            protein: 4.3,
-                            iron: '1%',
-                        }
-                    ],
                 }
             },
-            methods : {
-                get_picture : function() {
+            methods: {
+                get_picture: function () {
                     axios.get("http://localhost:5000/api/pictures")
-                    .then(function(res) {
-                        console.log(res)
-                    });
+                        .then(function (res) {
+                            console.log(res)
+                        });
+                },
+                filterOnlyCapsText : function(value, search, item) {
+                    return value != null &&
+                            search != null &&
+                            value.toString().toLocaleUpperCase().indexOf(search) !== -1
                 }
             },
-            created : function() {
-                var vm  = this
+            created: function () {
+                var vm = this
                 axios.get("http://192.168.0.100:5000/api/pictures")
-                .then(function(res) {
-                    console.log(res)
-                    console.log(res.data)
-                    console.log(res.data.fileList)
-                    vm.motion_data = []
-                    vm.motion_data = res.data.fileList
-                });
+                    .then(function (res) {
+                        console.log(res)
+                        console.log(res.data)
+                        console.log(res.data.fileList)
+                        vm.motion_data = []
+                        vm.motion_data = res.data.fileList
+                    });
             },
         })
     </script>
