@@ -24,31 +24,35 @@
                             </v-row>
                         </v-col>
                         <v-col cols="12" sm="7">
-                            <h1>キャプチャされた画像</h1>
-                            <template>
-                                <v-data-table 
-                                    dense
-                                    :headers="motion_header" 
-                                    :items="motion_data" 
-                                    :items-per-page="15" 
-                                    item-key="filename"
-                                    class="elevation-1" 
-                                    :search="search"
-                                    :custom-filter="filterOnlyCapsText"
-                                    >
-                                    <template v-slot:top>
-                                        <v-text-field
-                                            v-model="search"
-                                            label="Search(ファイル名で検索 例えば、'09250744など')"
-                                            class="mx-4"
-                                        >
-                                        </v-text-field>
-                                    </template>
-                                    <template v-slot:item.img="{item}">
-                                        <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
-                                    </template>
-                                </v-data-table>
-                            </template>
+                            <v-row>
+                                <h1>キャプチャされた画像</h1>
+                                <template>
+                                    <v-data-table dense :headers="motion_header" :items="motion_data" :items-per-page="5" item-key="filename" class="elevation-1"
+                                        :search="search" :custom-filter="filterOnlyCapsText">
+                                        <template v-slot:top>
+                                            <v-text-field v-model="search" label="Search(ファイル名で検索 例えば、'09250744など')" class="mx-4">
+                                            </v-text-field>
+                                        </template>
+                                        <template v-slot:item.img="{item}">
+                                            <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
+                                        </template>
+                                    </v-data-table>
+                                </template>
+                            </v-row>
+                            <v-row>
+                                <template>
+                                    <v-data-table dense :headers="yolo_header" :items="yolo_data" :items-per-page="5" item-key="filename" class="elevation-1"
+                                        :search="search" :custom-filter="filterOnlyCapsText">
+                                        <template v-slot:top>
+                                            <v-text-field v-model="search" label="Search(ファイル名で検索 例えば、'09250744など')" class="mx-4">
+                                            </v-text-field>
+                                        </template>
+                                        <template v-slot:item.img="{item}">
+                                            <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
+                                        </template>
+                                    </v-data-table>
+                                </template>
+                            </v-row>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -65,7 +69,7 @@
             vuetify: new Vuetify(),
             data: function () {
                 return {
-                    search:'',
+                    search: '',
                     motion_header: [
                         { text: 'id', value: 'id' },
                         { text: 'img', value: 'img' },
@@ -73,14 +77,15 @@
                         { text: 'file_time', value: 'file_time' },
                         { text: 'filename', value: 'file_name' }
                     ],
-                    motion_data: [
-                        // データは以下のような形式
-                        // {
-                        //     id:'1',
-                        //     filename:'A.jpeg',
-                        //     img:'base64だよ'
-                        // },
+                    motion_data: [],
+                    yolo_header : [
+                        { text: 'id', value: 'id' },
+                        { text: 'img', value: 'img' },
+                        { text: 'msg', value: 'msg' },
+                        { text: 'regist_date', value: 'regist_date' },
+                        { text: 'regist_time', value: 'regist_time' },
                     ],
+                    yolo_data: []
                 }
             },
             methods: {
@@ -90,10 +95,10 @@
                             console.log(res)
                         });
                 },
-                filterOnlyCapsText : function(value, search, item) {
+                filterOnlyCapsText: function (value, search, item) {
                     return value != null &&
-                            search != null &&
-                            value.toString().toLocaleUpperCase().indexOf(search) !== -1
+                        search != null &&
+                        value.toString().toLocaleUpperCase().indexOf(search) !== -1
                 }
             },
             created: function () {
@@ -105,6 +110,14 @@
                         console.log(res.data.fileList)
                         vm.motion_data = []
                         vm.motion_data = res.data.fileList
+                    });
+
+                    axios.get("http://192.168.0.100:5000/api/yolov5/pictures")
+                    .then(function (res) {
+                        console.log(res)
+                        console.log(res.data)
+                        vm.yolo_data = []
+                        vm.yolo_data = res.data.result
                     });
             },
         })
