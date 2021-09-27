@@ -11,49 +11,84 @@
 <body>
     <div id="app">
         <v-app>
-            <v-main>
+            <v-main class="grey lighten-2">
                 <v-container>
                     <v-row>
-                        <v-col cols="12" sm="5">
+                        <h1>
+                            <v-icon x-large>mdi-domain</v-icon>Yolov5Yakulto</h1>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12" sm="3">
                             <v-row>
-                                <h1>ラズパイストリーミング映像</h1>
-                                <img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 2%, 12%);" height="400px" width="600px" src="http://raspberrypi.local:8081/">
-                            </v-row>
-                            <v-row>
-                                キャプチャ総数 : {{motion_data.length}}
-                            </v-row>
-                        </v-col>
-                        <v-col cols="12" sm="7">
-                            <v-row>
-                                <h1>キャプチャされた画像</h1>
-                                <template>
-                                    <v-data-table dense :headers="motion_header" :items="motion_data" :items-per-page="5" item-key="filename" class="elevation-1"
-                                        :search="search" :custom-filter="filterOnlyCapsText">
-                                        <template v-slot:top>
-                                            <v-text-field v-model="search" label="Search(ファイル名で検索 例えば、'09250744など')" class="mx-4">
-                                            </v-text-field>
-                                        </template>
-                                        <template v-slot:item.img="{item}">
-                                            <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
-                                        </template>
-                                    </v-data-table>
-                                </template>
-                            </v-row>
-                            <v-row>
-                                <template>
-                                    <v-data-table dense :headers="yolo_header" :items="yolo_data" :items-per-page="5" item-key="filename" class="elevation-1"
-                                        :search="search" :custom-filter="filterOnlyCapsText">
-                                        <template v-slot:top>
-                                            <v-text-field v-model="search" label="Search(ファイル名で検索 例えば、'09250744など')" class="mx-4">
-                                            </v-text-field>
-                                        </template>
-                                        <template v-slot:item.img="{item}">
-                                            <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
-                                        </template>
-                                    </v-data-table>
-                                </template>
+                                <v-flex lg12>
+                                    <v-card class="ma-6 grey lighten-3">
+                                        <v-card-title>raspberrypi streaming</v-card-title>
+                                        <v-card-text>
+                                            <img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 2%, 12%);" height="100%" width="100%" src="http://raspberrypi.local:8081/">
+                                        </v-card-text>
+                                    </v-card>
+                                </v-flex>
                             </v-row>
                         </v-col>
+                        <v-col cols="12" sm="3">
+                            <v-row>
+                                <v-flex lg12>
+                                    <v-card class="ma-6 grey lighten-3">
+                                        <v-card-title>raspberrypi/yolov5 settings</v-card-title>
+                                        <v-card-text>
+                                            <p>hogehoge</p>
+                                            <p>hogehoge</p>
+                                            <p>hogehoge</p>
+                                            <p>fugafuga</p>
+                                            <p>fugafuga</p>
+                                            <p>fugafuga</p>
+                                            <p>fugafuga</p>
+                                            <p>hogehoge</p>
+                                            <p>hogehoge</p>
+                                            <p>hogehoge</p>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-flex>
+                            </v-row>
+                        </v-col>
+                        <v-col cols="12" sm="6">
+                            <v-row>
+                                <v-flex lg12>
+                                    <v-card class="ma-6 grey lighten-3">
+                                        <v-card-title>capture images</v-card-title>
+                                        <v-card-text>
+                                            <template>
+                                                <v-data-table dense :headers="motion_header" :items="motion_data" :items-per-page="5" item-key="filename" class="elevation-1 ma-6"
+                                                    :search="search" :custom-filter="filterOnlyCapsText">
+                                                    <template v-slot:top>
+                                                        <v-text-field v-model="search" label="Search(ファイル名で検索 例えば、'09250744など')" class="mx-4">
+                                                        </v-text-field>
+                                                    </template>
+                                                    <template v-slot:item.img="{item}">
+                                                        <img v-bind:src="'data:Image/png;base64,'+ item.img" height="50px" width="50px" />
+                                                    </template>
+                                                </v-data-table>
+                                            </template>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-flex>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-card class="ma-3 pa-6 grey lighten-3">
+                            <v-card-title>yolov5 analysis images</v-card-title>
+                            <v-layout row wrap>
+                                <v-flex lg2 v-for="(item,i) in yolo_data" :key="i">
+                                    <v-card class="grey lighten-4 ma-2">
+                                        <v-card-text>
+                                            <img v-bind:src="'data:Image/png;base64,'+ item.base64" width="100%" height="200px" alt="">
+                                            <p>【datetime】{{item.regist_date}} : {{item.regist_time}}</p>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-flex>
+                            </v-layout>
+                        </v-card>
                     </v-row>
                 </v-container>
             </v-main>
@@ -78,10 +113,11 @@
                         { text: 'filename', value: 'file_name' }
                     ],
                     motion_data: [],
-                    yolo_header : [
-                        { text: 'id', value: 'id' },
+                    yolo_header: [
+                        { text: 'id', value: '_id' },
                         { text: 'img', value: 'img' },
                         { text: 'msg', value: 'msg' },
+                        { text: 'labels', value: 'labels' },
                         { text: 'regist_date', value: 'regist_date' },
                         { text: 'regist_time', value: 'regist_time' },
                     ],
@@ -112,7 +148,7 @@
                         vm.motion_data = res.data.fileList
                     });
 
-                    axios.get("http://192.168.0.100:5000/api/yolov5/pictures")
+                axios.get("http://192.168.0.100:5000/api/yolov5/pictures")
                     .then(function (res) {
                         console.log(res)
                         console.log(res.data)
